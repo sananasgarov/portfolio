@@ -81,7 +81,7 @@ export default function Projects() {
   }, []);
 
   return (
-    <div className="projects-outer-container" ref={triggerRef}>
+    <div className="projects-outer-container" ref={triggerRef} id="projects">
       <div className="projects-sticky-wrapper">
         <div className="projects-header">
           <h2 className="projects-title">
