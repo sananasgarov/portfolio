@@ -75,7 +75,7 @@ export default function Skills() {
       
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
         gap: '1.5rem',
         maxWidth: '1000px',
         margin: '0 auto'

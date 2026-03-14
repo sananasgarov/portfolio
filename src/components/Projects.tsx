@@ -57,27 +57,29 @@ export default function Projects() {
   const triggerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const pin = gsap.fromTo(
-      sectionRef.current,
-      { translateX: 0 },
-      {
-        translateX: "-300vw",
-        ease: "none",
-        duration: 1,
-        scrollTrigger: {
-          trigger: triggerRef.current,
-          start: "top top",
-          end: "2000 top",
-          scrub: 0.6,
-          pin: true,
-          anticipatePin: 1,
-        },
-      }
-    );
+    const mm = gsap.matchMedia();
+    
+    mm.add("(min-width: 769px)", () => {
+      gsap.fromTo(
+        sectionRef.current,
+        { translateX: 0 },
+        {
+          translateX: "-300vw",
+          ease: "none",
+          duration: 1,
+          scrollTrigger: {
+            trigger: triggerRef.current,
+            start: "top top",
+            end: "2000 top",
+            scrub: 0.6,
+            pin: true,
+            anticipatePin: 1,
+          },
+        }
+      );
+    });
 
-    return () => {
-      pin.kill();
-    };
+    return () => mm.revert();
   }, []);
 
   return (
