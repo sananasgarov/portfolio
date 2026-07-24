@@ -5,18 +5,18 @@
 }
 
 .timeline-line {
-  position: absolute; 
-  left: 50%; 
-  top: 0; 
-  bottom: 0; 
-  width: 2px; 
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
   background: rgba(255,255,255,0.1);
   transform: translateX(-50%);
 }
 
 .timeline-item-wrapper {
   display: flex;
-  padding-bottom: 3rem;
+  padding-bottom: clamp(1.75rem, 5vw, 3rem);
   position: relative;
   width: 100%;
 }
@@ -45,7 +45,7 @@
 
 .timeline-content {
   width: 45%;
-  padding: 1.5rem;
+  padding: clamp(1.1rem, 3vw, 1.5rem);
 }
 
 .timeline-content.left {
@@ -67,41 +67,52 @@
 }
 
 .timeline-title {
-  font-size: 1.2rem;
+  font-size: clamp(1.05rem, 3vw, 1.2rem);
   margin: 0.5rem 0;
   font-weight: 700;
+  line-height: 1.35;
 }
 
 .timeline-org {
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
   font-weight: 500;
   margin-bottom: 0.5rem;
   color: var(--text-primary);
 }
 
 .timeline-desc {
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 2.4vw, 0.9rem);
   color: var(--text-secondary);
   line-height: 1.6;
 }
 
-@media (max-width: 768px) {
+/* Tablet: the 45% columns get too narrow for the copy before the phone
+   breakpoint kicks in, so collapse to the single rail early. */
+@media (max-width: 900px) {
+  /* Keep the base translateX(-50%) on both so the dot stays centred on the rail */
   .timeline-line {
-    left: 20px;
-  }
-  
-  .timeline-dot {
-    left: 20px;
-  }
-  
-  .timeline-item-wrapper {
-    justify-content: flex-start !important;
-    padding-left: 45px;
+    left: 14px;
   }
 
-  .timeline-content {
-    width: 100% !important;
-    text-align: left !important;
-    margin: 0 !important;
+  .timeline-dot {
+    left: 14px;
+    top: 22px;
+  }
+
+  .timeline-item-wrapper {
+    justify-content: flex-start !important;
+  }
+
+  .timeline-item-wrapper.left,
+  .timeline-item-wrapper.right {
+    padding-left: clamp(32px, 9vw, 45px);
+  }
+
+  .timeline-content,
+  .timeline-content.left,
+  .timeline-content.right {
+    width: 100%;
+    text-align: left;
+    margin: 0;
   }
 }

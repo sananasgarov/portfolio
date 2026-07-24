@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Menu, X, Download } from 'lucide-react';
-import cv from '../assets/FrontEndCV (1).pdf';
+import cv from '../assets/Sanan_Asgarov_CV (8).pdf';
 import './Navbar.css';
 
 export default function Navbar() {

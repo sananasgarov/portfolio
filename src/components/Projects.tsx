@@ -6,10 +6,32 @@ import rentacar from '../assets/rentcar.png'
 import shop from '../assets/shop.png'
 import todoapp from '../assets/todoapp.png'
 import game from '../assets/game.png'
+import samiyya from '../assets/samiyya.png'
+import mit from '../assets/mit.png'
 
 gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
+  {
+    title: "Samiyya Studio",
+    category: "Client Work",
+    description: "Marketing site for a beauty salon in Pittsburgh, PA — service catalog, booking flow and SEO-optimized pages.",
+    tech: ["Next.js", "React", "TypeScript", "SEO"],
+    github: null,
+    live: "https://www.samiyyastudio.com/",
+    image: samiyya,
+    color: "#ec4899"
+  },
+  {
+    title: "MİT Karyera Mərkəzi",
+    category: "Client Work",
+    description: "Corporate site for an IT career center, built multilingual to reach both local and international students.",
+    tech: ["Next.js", "React", "TypeScript", "i18n"],
+    github: null,
+    live: "https://mitconsulting.tech/en",
+    image: mit,
+    color: "#0ea5e9"
+  },
   {
     title: "Rent a Car App",
     category: "Full Stack",
@@ -58,22 +80,32 @@ export default function Projects() {
 
   useEffect(() => {
     const mm = gsap.matchMedia();
-    
-    mm.add("(min-width: 769px)", () => {
+
+    // Pinned horizontal scroll needs both room to move and room to breathe.
+    // Below this, the CSS in index.css stacks the slides vertically instead —
+    // keep the two queries in sync.
+    mm.add("(min-width: 1025px) and (min-height: 600px)", () => {
+      const track = sectionRef.current;
+      if (!track) return;
+
+      // Measured instead of hardcoded so adding a project doesn't break the scroll.
+      const getDistance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+
       gsap.fromTo(
-        sectionRef.current,
+        track,
         { translateX: 0 },
         {
-          translateX: "-300vw",
+          translateX: () => -getDistance(),
           ease: "none",
           duration: 1,
           scrollTrigger: {
             trigger: triggerRef.current,
             start: "top top",
-            end: "2000 top",
+            end: () => `+=${getDistance()}`,
             scrub: 0.6,
             pin: true,
             anticipatePin: 1,
+            invalidateOnRefresh: true,
           },
         }
       );
@@ -97,7 +129,13 @@ export default function Projects() {
             <div key={index} className="project-slide">
               <div className="project-card-v2 glass-card">
                 <div className="project-image-wrapper">
-                  <img src={project.image} alt={project.title} className="project-img" />
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="project-img"
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <div className="project-overlay" style={{ background: `linear-gradient(to top, ${project.color}dd, transparent)` }}>
                     <div className="project-category">{project.category}</div>
                   </div>
@@ -114,13 +152,15 @@ export default function Projects() {
                   </div>
                   
                   <div className="project-links-v2">
-                    <a href={project.github} target="_blank" rel="noopener noreferrer" className="project-link github">
-                      <Github size={20} />
-                      <span>Source</span>
-                    </a>
+                    {project.github && (
+                      <a href={project.github} target="_blank" rel="noopener noreferrer" className="project-link github">
+                        <Github size={20} />
+                        <span>Source</span>
+                      </a>
+                    )}
                     <a href={project.live} target="_blank" rel="noopener noreferrer" className="project-link live">
                       <ExternalLink size={20} />
-                      <span>Live Demo</span>
+                      <span>{project.github ? "Live Demo" : "Visit Site"}</span>
                     </a>
                   </div>
                 </div>

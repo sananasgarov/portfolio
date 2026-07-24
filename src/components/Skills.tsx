@@ -19,7 +19,15 @@ import {
   Slack as SlackIcon,
   FileText,
   Send,
-  Component
+  Component,
+  Container,
+  Triangle,
+  TrainFront,
+  CloudUpload,
+  Cloud,
+  Sparkles,
+  SquareTerminal,
+  Bot
 } from 'lucide-react';
 
 const skills = [
@@ -43,6 +51,14 @@ const skills = [
   { name: "Notion", icon: FileText },
   { name: "Postman", icon: Send },
   { name: "Shadcn UI", icon: Component },
+  { name: "Docker", icon: Container },
+  { name: "Vercel", icon: Triangle },
+  { name: "Railway", icon: TrainFront },
+  { name: "Render", icon: CloudUpload },
+  { name: "AWS", icon: Cloud },
+  { name: "ChatGPT", icon: Sparkles },
+  { name: "Cursor", icon: SquareTerminal },
+  { name: "GitHub Copilot", icon: Bot },
 ];
 
 export default function Skills() {
@@ -50,18 +66,25 @@ export default function Skills() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".skill-card", {
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-        },
-        opacity: 0,
-        scale: 0.8,
-        y: 30,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "back.out(1.7)"
-      });
+      gsap.fromTo(
+        ".skill-card",
+        { opacity: 0, scale: 0.8, y: 30 },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.06,
+          ease: "back.out(1.7)",
+          immediateRender: false,
+          clearProps: "opacity,transform",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 85%",
+            once: true,
+          },
+        }
+      );
     }, sectionRef);
 
     return () => ctx.revert();
@@ -69,33 +92,17 @@ export default function Skills() {
 
   return (
     <section ref={sectionRef} id="skills" className="container">
-      <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '3.5rem', textAlign: 'center' }}>
+      <h2 className="section-title">
         Core <span className="gradient-text">Skills</span>
       </h2>
-      
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
-        gap: '1.5rem',
-        maxWidth: '1000px',
-        margin: '0 auto'
-      }}>
+
+      <div className="skills-grid">
         {skills.map((skill, index) => {
           const Icon = skill.icon;
           return (
-            <div key={index} className="skill-card glass-card" style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              padding: '1.5rem 1rem',
-              textAlign: 'center',
-              width: '100%',
-              height: '160px',
-              flexShrink: 0
-            }}>
-              <Icon size={40} style={{ marginBottom: '1rem', color: 'var(--accent-primary)' }} />
-              <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>{skill.name}</h3>
+            <div key={index} className="skill-card glass-card">
+              <Icon size={40} aria-hidden="true" />
+              <h3 className="skill-name">{skill.name}</h3>
             </div>
           );
         })}

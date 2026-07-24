@@ -49,13 +49,21 @@ export default function Hero() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".hero-animate", {
-        opacity: 0,
-        y: 40,
-        duration: 1.2,
-        stagger: 0.3,
-        ease: "power4.out"
-      });
+      // fromTo (not from) with clearProps: the end state is explicit and the
+      // inline opacity is removed afterwards, so nothing can leave the hero
+      // stuck at opacity 0 if a ScrollTrigger.refresh() re-renders the tween.
+      gsap.fromTo(
+        ".hero-animate",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1.2,
+          stagger: 0.3,
+          ease: "power4.out",
+          clearProps: "opacity,transform"
+        }
+      );
     }, heroRef);
     return () => ctx.revert();
   }, []);
@@ -65,48 +73,30 @@ export default function Hero() {
   };
 
   return (
-    <section ref={heroRef} id="home" className="hero" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-      <div className="container" style={{ textAlign: 'center', zIndex: 1 }}>
-        <h2 className="hero-animate" style={{ fontSize: '1.2rem', color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '1rem' }}>
+    <section ref={heroRef} id="home" className="hero">
+      <div className="container hero-inner">
+        <h2 className="hero-animate hero-eyebrow">
           Welcome to my portfolio
         </h2>
-        <h1 className="hero-animate" style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', marginBottom: '1.5rem', lineHeight: 1.1 }}>
+        <h1 className="hero-animate hero-title">
           Hi, I'm <span className="gradient-text">Sanan Asgarov</span>
         </h1>
-        <p className="hero-animate" style={{ fontSize: 'clamp(1.2rem, 3vw, 2.5rem)', color: 'var(--text-secondary)', marginBottom: '3rem', minHeight: '1.5em', fontWeight: 300 }}>
-          {currentText}<span className="cursor" style={{ borderRight: '2px solid var(--accent-primary)', marginLeft: '2px', animation: 'blink 1s infinite' }}></span>
+        <p className="hero-animate hero-typed">
+          {currentText}<span className="hero-cursor"></span>
         </p>
-        
-        <div className="hero-animate" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button className="btn-primary" onClick={scrollToProjects} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+
+        <div className="hero-animate hero-actions">
+          <button className="btn-primary" onClick={scrollToProjects}>
             View My Work <MousePointer2 size={18} />
           </button>
-          <button 
+          <button
+            className="btn-secondary"
             onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-            style={{ 
-              background: 'rgba(255,255,255,0.05)', 
-              color: 'white', 
-              border: '1px solid var(--card-border)',
-              padding: '12px 32px',
-              borderRadius: '50px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-            onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
           >
             Contact
           </button>
         </div>
       </div>
-
-      <style>{`
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-      `}</style>
     </section>
   );
 }

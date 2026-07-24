@@ -1,5 +1,9 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import './Experience.css';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const timeline = [
   {
@@ -11,20 +15,26 @@ const timeline = [
   {
     title: "Frontend Developer Team Lead",
     organization: "Nummix",
-    date: "2025 - Present",
-    description: "Leading a team of frontend developers to build scalable web applications using React and TypeScript."
+    date: "2025 - 2026",
+    description: "Led a team of frontend developers to build scalable web applications using React and TypeScript."
   },
   {
     title: "Frontend Developer Intern",
     organization: "4SIM",
-    date: "2026-present",
-    description: "Contributing to the development of user interfaces for simulation software using React and Redux."
+    date: "2026",
+    description: "Contributed to the development of user interfaces for simulation software using React and Redux."
   },
   {
     title: "Python Backend Program(100% scholarship)",
     organization: "Holberton School Baku",
     date: "2026-present",
     description: "Intensive 4-month program covering Python, Flask, SQL, Docker, and cloud technologies."
+  },
+  {
+    title: "Frontend Development Mentor",
+    organization: "MİT Karyera Mərkəzi",
+    date: "2026 - Present",
+    description: "Mentoring students in modern frontend development, guiding them through React, TypeScript and real-world project work."
   }
 ];
 
@@ -32,104 +42,69 @@ export default function Experience() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-          // Only animate if not mobile (simplified check)
-    if (window.innerWidth > 768) {
-      const ctx = gsap.context(() => {
-        gsap.from(".timeline-item-wrapper", {
+    // matchMedia already scopes selectors to the element passed as 3rd arg and
+    // cleans up its own tweens — no nested gsap.context needed.
+    const mm = gsap.matchMedia();
+
+    const reveal = (from: gsap.TweenVars) =>
+      gsap.fromTo(
+        ".timeline-item-wrapper",
+        from,
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: "power2.out",
+          immediateRender: false,
+          clearProps: "opacity,transform",
           scrollTrigger: {
             trigger: sectionRef.current,
-            start: "top 70%",
+            start: "top 85%",
+            once: true,
           },
-          opacity: 0,
-          x: (index) => index % 2 === 0 ? -50 : 50,
-          duration: 0.8,
-          stagger: 0.3,
-          ease: "power2.out"
-        });
-      }, sectionRef);
-      return () => ctx.revert();
-    }
+        }
+      );
+
+    // Side-to-side entrance only makes sense while the timeline is two-column,
+    // which Experience.css collapses at 900px.
+    mm.add("(min-width: 901px)", () => {
+      reveal({ opacity: 0, x: (index: number) => (index % 2 === 0 ? -50 : 50) });
+    }, sectionRef);
+
+    // Single-column timeline: fade up in place, no horizontal offset.
+    mm.add("(max-width: 900px)", () => {
+      reveal({ opacity: 0, y: 30 });
+    }, sectionRef);
+
+    return () => mm.revert();
   }, []);
 
   return (
     <section ref={sectionRef} id="experience" className="container">
-      <br /><br />
-      <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '4rem', textAlign: 'center' }}>
-        Experience & <span className="gradient-text">Education</span>
+      <h2 className="section-title">
+        Experience &amp; <span className="gradient-text">Education</span>
       </h2>
-      
-      <div className="timeline-container" style={{ position: 'relative', maxWidth: '800px', margin: '0 auto' }}>
+
+      <div className="timeline-container">
         {/* Central Line */}
         <div className="timeline-line"></div>
 
         {timeline.map((item, index) => (
-          <div key={index} className="timeline-item-wrapper" style={{ 
-            display: 'flex', 
-            justifyContent: index % 2 === 0 ? 'flex-end' : 'flex-start',
-            paddingBottom: '3rem',
-            position: 'relative',
-            width: '100%'
-          }}>
+          <div key={index} className={`timeline-item-wrapper ${index % 2 === 0 ? 'left' : 'right'}`}>
             {/* Dot */}
             <div className="timeline-dot"></div>
 
-            <div className={`glass-card timeline-content ${index % 2 === 0 ? 'left' : 'right'}`} style={{ 
-              width: '45%', 
-              padding: '1.5rem',
-              textAlign: index % 2 === 0 ? 'right' : 'left'
-            }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 600 }}>{item.date}</span>
-              <h3 style={{ fontSize: '1.2rem', margin: '0.5rem 0' }}>{item.title}</h3>
-              <p style={{ fontSize: '1rem', fontWeight: 500, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>{item.organization}</p>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{item.description}</p>
+            <div className={`glass-card timeline-content ${index % 2 === 0 ? 'left' : 'right'}`}>
+              <span className="timeline-date">{item.date}</span>
+              <h3 className="timeline-title">{item.title}</h3>
+              <p className="timeline-org">{item.organization}</p>
+              <p className="timeline-desc">{item.description}</p>
             </div>
           </div>
         ))}
       </div>
-
-      <style>{`
-        .timeline-line {
-          position: absolute; 
-          left: 50%; 
-          top: 0; 
-          bottom: 0; 
-          width: 2px; 
-          background: rgba(255,255,255,0.1);
-          transform: translateX(-50%);
-        }
-        .timeline-dot {
-          position: absolute; 
-          left: 50%; 
-          top: 0; 
-          width: 12px; 
-          height: 12px; 
-          border-radius: 50%; 
-          background: var(--accent-primary);
-          box-shadow: 0 0 10px var(--accent-primary);
-          transform: translateX(-50%);
-          z-index: 2;
-        }
-
-        @media (max-width: 768px) {
-          .timeline-line {
-            left: 20px;
-            transform: none;
-          }
-          .timeline-item-wrapper {
-            justify-content: flex-start !important;
-            padding-left: 45px;
-          }
-          .timeline-dot {
-            left: 20px;
-            transform: none;
-            top: 25px; /* Adjust to match card top slightly */
-          }
-          .timeline-content {
-            width: 100% !important;
-            text-align: left !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

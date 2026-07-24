@@ -13,6 +13,12 @@
   --glass-border: rgba(255, 255, 255, 0.1);
   --font-main: 'Inter', system-ui, -apple-system, sans-serif;
   --font-heading: 'Outfit', sans-serif;
+
+  /* Responsive rhythm: one source of truth for gutters and section spacing */
+  --gutter: clamp(1rem, 4vw, 1.5rem);
+  --section-padding: clamp(56px, 10vw, 100px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
 * {
@@ -29,12 +35,32 @@ html, body {
   font-family: var(--font-main);
   overflow-x: hidden;
   scroll-behavior: smooth;
+  width: 100%;
+}
+
+body {
+  /* Stops iOS from inflating text in landscape */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 700;
   letter-spacing: -0.02em;
+  overflow-wrap: break-word;
+}
+
+p, span, li {
+  overflow-wrap: break-word;
+}
+
+img, svg, video, canvas {
+  max-width: 100%;
+}
+
+img {
+  height: auto;
 }
 
 a {
@@ -43,8 +69,14 @@ a {
   transition: opacity 0.3s ease;
 }
 
-a:hover {
-  opacity: 0.8;
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+  a:hover {
+    opacity: 0.8;
+  }
 }
 
 .gradient-text {
@@ -60,53 +92,101 @@ a:hover {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--card-border);
   border-radius: 20px;
-  padding: 2rem;
+  padding: clamp(1.25rem, 5vw, 2rem);
   transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.3s ease;
 }
 
-.glass-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(255, 255, 255, 0.2);
+@media (hover: hover) {
+  .glass-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Layered blur is expensive on phones — soften it there */
+@media (max-width: 768px) {
+  .glass-card {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 16px;
+  }
 }
 
 .container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 0 1rem;
-  }
+  padding-left: max(var(--gutter), var(--safe-left));
+  padding-right: max(var(--gutter), var(--safe-right));
 }
 
 section {
-  padding: 100px 0;
+  padding: var(--section-padding) 0;
   position: relative;
 }
 
-@media (max-width: 768px) {
-  section {
-    padding: 60px 0;
-  }
+.section-title {
+  font-size: clamp(1.9rem, 6vw, 3.5rem);
+  margin-bottom: clamp(2rem, 6vw, 4rem);
+  text-align: center;
 }
 
 .btn-primary {
   background: var(--accent-gradient);
   color: white;
   padding: 12px 28px;
+  min-height: 44px; /* comfortable touch target */
   border-radius: 50px;
   border: none;
   font-weight: 600;
+  font-size: 1rem;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   font-family: var(--font-main);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.btn-primary:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+@media (hover: hover) {
+  .btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  }
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid var(--card-border);
+  padding: 12px 32px;
+  min-height: 44px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (hover: hover) {
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
 }
 
 /* Custom Scrollbar */
@@ -127,7 +207,168 @@ section {
   background: #444;
 }
 
-/* Projects Redesign Styles */
+/* ==========================================================================
+   Background particles
+   ========================================================================== */
+.particles-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+.hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: calc(var(--section-padding) + 40px) 0 var(--section-padding);
+  text-align: center;
+}
+
+.hero-inner {
+  text-align: center;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  font-size: clamp(0.75rem, 3vw, 1.2rem);
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 1rem;
+}
+
+.hero-title {
+  font-size: clamp(2.25rem, 9vw, 6rem);
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+}
+
+.hero-typed {
+  font-size: clamp(1.05rem, 4.5vw, 2.5rem);
+  color: var(--text-secondary);
+  margin-bottom: clamp(2rem, 6vw, 3rem);
+  /* Reserve two lines so the typewriter never shifts the buttons */
+  min-height: 2.6em;
+  font-weight: 300;
+  line-height: 1.3;
+}
+
+@media (min-width: 480px) {
+  .hero-typed {
+    min-height: 1.5em;
+  }
+}
+
+.hero-cursor {
+  border-right: 2px solid var(--accent-primary);
+  margin-left: 2px;
+  animation: blink 1s infinite;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 380px) {
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Short landscape phones: let the hero grow instead of squashing */
+@media (max-height: 520px) and (orientation: landscape) {
+  .hero {
+    min-height: auto;
+    padding: 120px 0 60px;
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ==========================================================================
+   About
+   ========================================================================== */
+.about-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-title {
+  font-size: clamp(1.9rem, 6vw, 3.5rem);
+  margin-bottom: clamp(1.75rem, 5vw, 3rem);
+}
+
+.about-card {
+  padding: clamp(1.5rem, 5vw, 3rem);
+}
+
+.about-paragraph {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.about-paragraph + .about-paragraph {
+  margin-top: 1.5rem;
+}
+
+.about-highlight {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Skills
+   ========================================================================== */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(100px, 28vw, 140px), 1fr));
+  gap: clamp(0.75rem, 3vw, 1.5rem);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.skill-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 1.5rem) 0.75rem;
+  text-align: center;
+  width: 100%;
+  min-height: clamp(110px, 30vw, 160px);
+}
+
+.skill-card svg {
+  width: clamp(28px, 8vw, 40px);
+  height: clamp(28px, 8vw, 40px);
+  margin-bottom: clamp(0.5rem, 2vw, 1rem);
+  color: var(--accent-primary);
+}
+
+.skill-name {
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   Projects
+   ========================================================================== */
 .projects-outer-container {
   overflow: hidden;
 }
@@ -149,21 +390,22 @@ section {
 }
 
 .projects-title {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(2rem, 6vw, 4.5rem);
   margin-bottom: 0.5rem;
 }
 
 .projects-subtitle {
   color: var(--text-secondary);
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
   max-width: 600px;
 }
 
 .projects-horizontal-scroll {
   display: flex;
-  width: 400vw; /* 4 projects + 1 final slide = 5 slides, but let's adjust for content */
+  width: max-content; /* grows with the number of slides; GSAP measures it at runtime */
   height: 70vh;
   padding-left: 10vw;
+  padding-right: 10vw;
   align-items: center;
   gap: 4rem;
 }
@@ -200,8 +442,10 @@ section {
   transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.project-card-v2:hover .project-img {
-  transform: scale(1.08);
+@media (hover: hover) {
+  .project-card-v2:hover .project-img {
+    transform: scale(1.08);
+  }
 }
 
 .project-overlay {
@@ -209,7 +453,7 @@ section {
   inset: 0;
   display: flex;
   align-items: flex-end;
-  padding: 2rem;
+  padding: clamp(1rem, 4vw, 2rem);
 }
 
 .project-category {
@@ -224,33 +468,33 @@ section {
 
 .project-content-v2 {
   flex: 1;
-  padding: 3rem;
+  padding: clamp(1.25rem, 4vw, 3rem);
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .project-card-title {
-  font-size: 2.2rem;
-  margin-bottom: 1.2rem;
+  font-size: clamp(1.35rem, 4vw, 2.2rem);
+  margin-bottom: clamp(0.75rem, 2vw, 1.2rem);
 }
 
 .project-card-desc {
   color: var(--text-secondary);
   line-height: 1.7;
-  font-size: 1.05rem;
-  margin-bottom: 2rem;
+  font-size: clamp(0.9rem, 2.4vw, 1.05rem);
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
 }
 
 .project-tech-stack {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-bottom: 2.5rem;
+  gap: clamp(0.5rem, 2vw, 0.8rem);
+  margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
 }
 
 .tech-tag {
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
   padding: 5px 14px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
@@ -259,20 +503,24 @@ section {
 
 .project-links-v2 {
   display: flex;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  gap: clamp(1rem, 3vw, 1.5rem);
 }
 
 .project-link {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
   font-weight: 600;
+  min-height: 44px;
   transition: color 0.3s ease;
 }
 
-.project-link:hover {
-  color: var(--accent-primary);
-  opacity: 1;
+@media (hover: hover) {
+  .project-link:hover {
+    color: var(--accent-primary);
+    opacity: 1;
+  }
 }
 
 .final-slide {
@@ -284,50 +532,26 @@ section {
 
 .view-more-card {
   text-align: center;
-  padding: 4rem !important;
+  padding: clamp(2rem, 6vw, 4rem) !important;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: clamp(1.25rem, 4vw, 2rem);
 }
 
 .view-more-card h3 {
-  font-size: 2rem;
+  font-size: clamp(1.4rem, 5vw, 2rem);
   max-width: 300px;
 }
 
-@media (max-width: 1024px) {
-  .project-card-v2 {
-    flex-direction: column;
+/* Tablet, phone and short landscape viewports: the pinned horizontal rail
+   becomes a plain vertical list. This is the exact inverse of the GSAP
+   matchMedia query in Projects.tsx — keep the two in sync. */
+@media (max-width: 1024px), (max-height: 599px) {
+  .projects-outer-container {
+    padding: var(--section-padding) 0;
   }
-  
-  .project-image-wrapper {
-    height: 40%;
-    flex: none;
-  }
-  
-  .project-content-v2 {
-    padding: 2rem;
-  }
-  
-  .project-card-title {
-    font-size: 1.8rem;
-  }
-  
-  .projects-horizontal-scroll {
-    gap: 2rem;
-  }
-  
-  .project-slide {
-    width: 90vw;
-  }
-  
-  .view-more-card {
-    padding: 2rem !important;
-  }
-}
 
-@media (max-width: 768px) {
   .projects-sticky-wrapper {
     height: auto;
     width: 100%;
@@ -335,14 +559,14 @@ section {
     display: block;
     overflow: visible;
   }
-  
+
   .projects-horizontal-scroll {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: auto;
-    padding: 0 1rem;
-    gap: 3rem;
+    padding: 0 max(var(--gutter), var(--safe-left));
+    gap: clamp(1.5rem, 5vw, 3rem);
     transform: none !important; /* Force override GSAP */
   }
 
@@ -350,31 +574,181 @@ section {
     width: 100%;
     max-width: 100%;
     height: auto;
-    margin-bottom: 2rem;
   }
-  
+
   .project-card-v2 {
     flex-direction: column;
     height: auto;
     min-height: auto;
+    border-radius: 20px !important;
   }
-  
+
   .project-image-wrapper {
-    height: 250px;
+    flex: none;
     width: 100%;
+    height: clamp(180px, 45vw, 320px);
   }
-  
-  .project-content-v2 {
-    padding: 1.5rem;
-  }
-  
+
   .projects-header {
-    padding: 0 1.5rem;
-    margin-bottom: 3rem;
+    padding: 0 max(var(--gutter), var(--safe-left));
+    margin-bottom: clamp(2rem, 6vw, 3rem);
   }
-  
+
   .final-slide {
     width: 100%;
-    padding: 2rem 0;
+    padding: 0;
+  }
+
+  .view-more-card {
+    width: 100%;
+  }
+
+  .view-more-card h3 {
+    max-width: 100%;
+  }
+}
+
+/* ==========================================================================
+   Contact
+   ========================================================================== */
+.contact-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: clamp(2rem, 5vw, 3rem);
+}
+
+.contact-heading {
+  font-size: clamp(1.4rem, 4.5vw, 1.8rem);
+  margin-bottom: 1.5rem;
+}
+
+.contact-lead {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: clamp(1.75rem, 5vw, 2.5rem);
+}
+
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vw, 1.5rem);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0; /* lets the long links actually wrap */
+}
+
+.contact-icon {
+  width: clamp(42px, 12vw, 50px);
+  height: clamp(42px, 12vw, 50px);
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-item-body {
+  min-width: 0;
+}
+
+.contact-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.contact-value {
+  font-weight: 600;
+  font-size: clamp(0.85rem, 2.6vw, 1rem);
+  overflow-wrap: anywhere;
+  display: inline-block;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.site-footer {
+  padding: clamp(2.5rem, 8vw, 4rem) 0 calc(2rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--card-border);
+  background: rgba(5, 5, 5, 0.8);
+  margin-top: clamp(2rem, 8vw, 4rem);
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.25rem, 4vw, 2rem);
+  text-align: center;
+}
+
+.footer-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+}
+
+.footer-socials {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.social-link {
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--card-border);
+}
+
+@media (hover: hover) {
+  .social-link:hover {
+    color: var(--accent-primary);
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--accent-primary);
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+.footer-note {
+  color: var(--text-secondary);
+  font-size: max(0.8rem, 12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   Motion preferences
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
